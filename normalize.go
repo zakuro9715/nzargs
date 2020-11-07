@@ -43,7 +43,7 @@ func checkFlagValue(name string, n int, args []string) error {
 }
 
 // Normalize parses argv
-func (app *App) Normalize(argv []string) ([]Value, error) {
+func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
 	normalized := make([]Value, 0)
 	for i := 0; i < len(argv); i++ {
 		v := argv[i]
@@ -95,11 +95,7 @@ func (app *App) NormalizeToStrings(argv []string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	values := make([]string, len(normalized))
-	for i, v := range normalized {
-		values[i] = v.Text()
-	}
-	return values, nil
+	return normalized.Strings(), nil
 }
 
 // NormalizeArgs is same Normalize except use os.Args

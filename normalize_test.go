@@ -7,57 +7,59 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-var exampleExpected = []string{
+var exampleExpectedStrings = []string{
 	"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
-	"--values1=v", "--values2=v1,v2", "arg",
+	"abc", "--values1=v", "--values2=v1,v2", "arg",
 }
+
 var exampleInput = []string{
 	"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
-	"--values1=v", "--values2", "v1", "v2", "arg",
+	"abc", "--values1=v", "--values2", "v1", "v2", "arg",
 }
 
-func normalizeExampleToStrings() ([]string, error) {
+func normalizeExampleToStrings() []string {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	return app.NormalizeToStrings(exampleInput)
-}
-
-func normalizeExample() ([]string, error) {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	return app.NormalizeToStrings(exampleInput)
-}
-
-func ExampleApp_NormalizeToStrings() {
-	parsed, err := normalizeExampleToStrings()
+	ss, err := app.NormalizeToStrings(exampleInput)
 	if err != nil {
 		panic(err)
 	}
+	return ss
+}
+
+func normalizeExample() NormalizedArgv {
+	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	v, err := app.Normalize(exampleInput)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
+func ExampleApp_NormalizeToStrings() {
+	parsed := normalizeExampleToStrings()
 	fmt.Println(strings.Join(parsed[:7], " "))
 	fmt.Println(strings.Join(parsed[7:], " "))
 	// Output:
 	// -a -b -c -d=c --cd=c -e -f=x,x
-	// --values1=v --values2=v1,v2 arg
+	// abc --values1=v --values2=v1,v2 arg
 }
 
 func BenchmarkNormalizeExample(b *testing.B) {
-	if _, err := normalizeExample(); err != nil {
-		b.Fail()
-	}
+	normalizeExample()
 }
 
 func BenchmarkNormalizeExampleToStrings(b *testing.B) {
-	if _, err := normalizeExampleToStrings(); err != nil {
-		b.Fail()
-	}
+	normalizeExampleToStrings()
 }
 
 func TestNormalizeToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
 	got, err := app.NormalizeToStrings(exampleInput)
-	if assert.NoError(t, err) {
-		assert.Equal(t, got, exampleExpected)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, got, exampleExpectedStrings)
 }
 
 func TestTooFewValues(t *testing.T) {
@@ -72,7 +74,7 @@ func TestNormalizeArgs(t *testing.T) {
 	os.Args = []string{"a", "b", "-c=0"}
 	want := []Value{&Arg{"b"}, &Flag{"c", []string{"0"}}}
 	got, err := New().NormalizeArgs()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, want, got)
 }
 
@@ -80,7 +82,6 @@ func TestNormalizeArgsToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
 	os.Args = append([]string{"a.out"}, exampleInput...)
 	got, err := app.NormalizeArgsToStrings()
-	if assert.NoError(t, err) {
-		assert.Equal(t, got, exampleExpected)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, got, exampleExpectedStrings)
 }
