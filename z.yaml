@@ -1,7 +1,14 @@
 tasks:
   setup:
     run:
-      - go get -u github.com/nathany/looper
+      - go get github.com/eaburns/Watch
   watch:
     run:
-      - looper
+      - Watch -t z test bench
+  test:
+    run:
+      - go test -v -race .
+    tasks:
+      bench:
+        run:
+          - go test -v -bench .
