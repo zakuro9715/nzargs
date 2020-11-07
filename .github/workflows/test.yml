@@ -21,6 +21,8 @@ jobs:
       run: go install -v ./
     - name: Test
       run: go test -v -coverprofile coverage.txt -covermode=atomic ./...
+    - name: Benchmark
+      run: go test -test.bench ./...
     - name: Upload coverage to codecov
       uses: codecov/codecov-action@v1
       with:

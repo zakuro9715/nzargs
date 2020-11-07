@@ -40,6 +40,18 @@ func ExampleApp_NormalizeToStrings() {
 	// --values1=v --values2=v1,v2 arg
 }
 
+func BenchmarkNormalizeExample(b *testing.B) {
+	if _, err := normalizeExample(); err != nil {
+		b.Fail()
+	}
+}
+
+func BenchmarkNormalizeExampleToStrings(b *testing.B) {
+	if _, err := normalizeExampleToStrings(); err != nil {
+		b.Fail()
+	}
+}
+
 func TestNormalizeToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
 	got, err := app.NormalizeToStrings(exampleInput)
