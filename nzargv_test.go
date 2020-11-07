@@ -36,9 +36,9 @@ func TestNormalizeToStrings(t *testing.T) {
 
 func TestTooFewValues(t *testing.T) {
 	app := New().FlagN("value", 2).FlagN("v", 2)
-	_, err := app.Normalize([]string{"--value", "0"})
+	_, err := app.NormalizeToStrings([]string{"--value", "0"})
 	assert.Error(t, err)
-	_, err = app.Normalize([]string{"-v", "0"})
+	_, err = app.NormalizeToStrings([]string{"-v", "0"})
 	assert.Error(t, err)
 }
 
