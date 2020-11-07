@@ -1,4 +1,4 @@
-package nzargs
+package nzargv
 
 import (
 	"fmt"
