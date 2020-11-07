@@ -42,6 +42,14 @@ func TestTooFewValues(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestNormalizeArgs(t *testing.T) {
+	os.Args = []string{"a", "b", "-c=0"}
+	want := []Value{&Arg{"b"}, &Flag{"c", []string{"0"}}}
+	got, err := New().NormalizeArgs()
+	assert.NoError(t, err)
+	assert.Equal(t, want, got)
+}
+
 func TestNormalizeArgsToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
 	os.Args = append([]string{"a.out"}, exampleInput...)
