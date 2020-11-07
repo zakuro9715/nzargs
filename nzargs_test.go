@@ -9,11 +9,11 @@ import (
 
 var exampleExpected = []string{
 	"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
-	"--values1=v", "--values2=v1,v2",
+	"--values1=v", "--values2=v1,v2", "arg",
 }
 var exampleInput = []string{
 	"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
-	"--values1=v", "--values2", "v1", "v2",
+	"--values1=v", "--values2", "v1", "v2", "arg",
 }
 
 func TestNormalizeToString(t *testing.T) {
@@ -22,6 +22,14 @@ func TestNormalizeToString(t *testing.T) {
 	if assert.NoError(t, err) {
 		assert.Equal(t, got, exampleExpected)
 	}
+}
+
+func TestTooFewValues(t *testing.T) {
+	app := New().FlagN("value", 2).FlagN("v", 2)
+	_, err := app.Normalize([]string{"--value", "0"})
+	assert.Error(t, err)
+	_, err = app.Normalize([]string{"-v", "0"})
+	assert.Error(t, err)
 }
 
 func ExampleApp_NormalizeToString() {
