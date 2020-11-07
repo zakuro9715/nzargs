@@ -3,6 +3,7 @@ package nzargv
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,13 +18,26 @@ var exampleInput = []string{
 	"--values1=v", "--values2", "v1", "v2", "arg",
 }
 
-func ExampleApp_NormalizeToStrings() {
+func normalizeExampleToStrings() ([]string, error) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	out, err := app.NormalizeToStrings(exampleInput)
+	return app.NormalizeToStrings(exampleInput)
+}
+
+func normalizeExample() ([]string, error) {
+	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	return app.NormalizeToStrings(exampleInput)
+}
+
+func ExampleApp_NormalizeToStrings() {
+	parsed, err := normalizeExampleToStrings()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%v", out)
+	fmt.Println(strings.Join(parsed[:7], " "))
+	fmt.Println(strings.Join(parsed[7:], " "))
+	// Output:
+	// -a -b -c -d=c --cd=c -e -f=x,x
+	// --values1=v --values2=v1,v2 arg
 }
 
 func TestNormalizeToStrings(t *testing.T) {
