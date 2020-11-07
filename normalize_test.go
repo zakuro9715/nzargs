@@ -14,6 +14,8 @@ var (
 	exampleExpectedStrings = []string{
 		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
 		"abc", "--values1=v", "--values2=v1,v2", "arg",
+		"-", "-----", "---v",
+		"-v=v", "--value=v",
 	}
 
 	exampleExpectedArgv = NormalizedArgv{
@@ -28,11 +30,18 @@ var (
 		NewFlag("values1", "v"),
 		NewFlag("values2", "v1", "v2"),
 		NewArg("arg"),
+		NewArg("-"),
+		NewArg("-----"),
+		NewFlag("-v"),
+		NewArg("-v=v"),
+		NewArg("--value=v"),
 	}
 
 	exampleInput = []string{
 		"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
 		"abc", "--values1=v", "--values2", "v1", "v2", "arg",
+		"-", "-----", "---v",
+		"--", "-v=v", "--value=v",
 	}
 )
 
@@ -57,10 +66,12 @@ func normalizeExample() NormalizedArgv {
 func ExampleApp_NormalizeToStrings() {
 	parsed := normalizeExampleToStrings()
 	fmt.Println(strings.Join(parsed[:7], " "))
-	fmt.Println(strings.Join(parsed[7:], " "))
+	fmt.Println(strings.Join(parsed[7:11], " "))
+	fmt.Println(strings.Join(parsed[11:], " "))
 	// Output:
 	// -a -b -c -d=c --cd=c -e -f=x,x
 	// abc --values1=v --values2=v1,v2 arg
+	// - ----- ---v -v=v --value=v
 }
 
 func BenchmarkNormalizeExample(b *testing.B) {

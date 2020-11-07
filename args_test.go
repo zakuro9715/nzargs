@@ -18,10 +18,15 @@ func TestFlagsAndArgs(t *testing.T) {
 		NewFlag("f", "x", "x"),
 		NewFlag("values1", "v"),
 		NewFlag("values2", "v1", "v2"),
+		NewFlag("-v"),
 	}
 	args := []*Arg{
 		NewArg("abc"),
 		NewArg("arg"),
+		NewArg("-"),
+		NewArg("-----"),
+		NewArg("-v=v"),
+		NewArg("--value=v"),
 	}
 	assert.Equal(t, flags, argv.Flags())
 	assert.Equal(t, args, argv.Args())

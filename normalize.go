@@ -97,9 +97,16 @@ func (app *App) processShortFlag(prefix string, argv []string) ([]Value, int, er
 // Normalize parses argv
 func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
 	normalized := make([]Value, 0)
+	forceArgMode := false
 	for i := 0; i < len(argv); i++ {
 		v := argv[i]
 		switch {
+		case v == "--":
+			forceArgMode = true
+		case forceArgMode:
+			normalized = append(normalized, NewArg(v))
+		case len(strings.Trim(v, "-")) == 0: // hyphen only
+			normalized = append(normalized, NewArg(v))
 		case strings.HasPrefix(v, "--"):
 			flag, n, err := app.processLongFlag("--", argv[i:])
 			if err != nil {
