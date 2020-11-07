@@ -17,18 +17,18 @@ var exampleInput = []string{
 	"--values1=v", "--values2", "v1", "v2", "arg",
 }
 
-func ExampleApp_NormalizeToString() {
+func ExampleApp_NormalizeToStrings() {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	out, err := app.NormalizeToString(exampleInput)
+	out, err := app.NormalizeToStrings(exampleInput)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%v", out)
 }
 
-func TestNormalizeToString(t *testing.T) {
+func TestNormalizeToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	got, err := app.NormalizeToString(exampleInput)
+	got, err := app.NormalizeToStrings(exampleInput)
 	if assert.NoError(t, err) {
 		assert.Equal(t, got, exampleExpected)
 	}
@@ -42,10 +42,10 @@ func TestTooFewValues(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestNormalizeArgsToString(t *testing.T) {
+func TestNormalizeArgsToStrings(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
 	os.Args = append([]string{"a.out"}, exampleInput...)
-	got, err := app.NormalizeArgsToString()
+	got, err := app.NormalizeArgsToStrings()
 	if assert.NoError(t, err) {
 		assert.Equal(t, got, exampleExpected)
 	}

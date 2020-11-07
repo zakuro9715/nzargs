@@ -89,8 +89,8 @@ func (app *App) Normalize(argv []string) ([]Value, error) {
 	return normalized, nil
 }
 
-// NormalizeToString normalize argv and returns result as text slice
-func (app *App) NormalizeToString(argv []string) ([]string, error) {
+// NormalizeToStrings normalize argv and returns result as text slice
+func (app *App) NormalizeToStrings(argv []string) ([]string, error) {
 	normalized, err := app.Normalize(argv)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (app *App) NormalizeArgs() ([]Value, error) {
 	return app.Normalize(os.Args[1:])
 }
 
-// NormalizeArgsToString is same NormalizeToString except use os.Args
-func (app *App) NormalizeArgsToString() ([]string, error) {
-	return app.NormalizeToString(os.Args[1:])
+// NormalizeArgsToStrings is same NormalizeToStrings except use os.Args
+func (app *App) NormalizeArgsToStrings() ([]string, error) {
+	return app.NormalizeToStrings(os.Args[1:])
 }
