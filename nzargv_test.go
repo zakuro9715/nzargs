@@ -2,6 +2,7 @@ package nzargv
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,15 @@ var exampleExpected = []string{
 var exampleInput = []string{
 	"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
 	"--values1=v", "--values2", "v1", "v2", "arg",
+}
+
+func ExampleApp_NormalizeToString() {
+	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	out, err := app.NormalizeToString(exampleInput)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%v", out)
 }
 
 func TestNormalizeToString(t *testing.T) {
@@ -32,11 +42,11 @@ func TestTooFewValues(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func ExampleApp_NormalizeToString() {
+func TestNormalizeArgsToString(t *testing.T) {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
-	out, err := app.NormalizeToString(exampleInput)
-	if err != nil {
-		panic(err)
+	os.Args = append([]string{"a.out"}, exampleInput...)
+	got, err := app.NormalizeArgsToString()
+	if assert.NoError(t, err) {
+		assert.Equal(t, got, exampleExpected)
 	}
-	fmt.Printf("%v", out)
 }

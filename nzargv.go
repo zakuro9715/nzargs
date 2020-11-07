@@ -31,11 +31,6 @@ func (app *App) GetFlagN(name string) int {
 	return 0
 }
 
-// NormalizeArgs normalize os.Args
-func (app *App) NormalizeArgs() {
-	app.Normalize(os.Args[1:])
-}
-
 func checkFlagValue(name string, n int, args []string) error {
 	i := 0
 	for ; i < len(args) && !strings.HasPrefix(args[i], "-"); i++ {
@@ -105,4 +100,14 @@ func (app *App) NormalizeToString(argv []string) ([]string, error) {
 		values[i] = v.Text()
 	}
 	return values, nil
+}
+
+// NormalizeArgs is same Normalize except use os.Args
+func (app *App) NormalizeArgs() ([]Value, error) {
+	return app.Normalize(os.Args[1:])
+}
+
+// NormalizeArgsToString is same NormalizeToString except use os.Args
+func (app *App) NormalizeArgsToString() ([]string, error) {
+	return app.NormalizeToString(os.Args[1:])
 }
