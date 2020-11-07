@@ -42,6 +42,58 @@ func checkFlagValue(name string, n int, args []string) error {
 	return nil
 }
 
+func splitByEq(s string) (string, string) {
+	splited := strings.SplitN(s, "=", 2)
+	if len(splited) == 1 {
+		return splited[0], ""
+	}
+	return splited[0], splited[1]
+}
+
+func (app *App) processLongFlag(prefix string, args []string) (Value, int, error) {
+	i := 0
+	text := strings.TrimPrefix(args[i], prefix)
+	name, value := splitByEq(text)
+	var flag *Flag
+	if len(value) == 0 {
+		n := app.GetFlagN(name)
+		if err := checkFlagValue(name, n, args[1:]); err != nil {
+			return nil, 0, err
+		}
+		flag = NewFlag(name, args[1:n+1]...)
+		i += n
+	} else {
+		values := strings.Split(value, ",")
+		flag = NewFlag(name, values...)
+	}
+	return flag, i, nil
+}
+
+func (app *App) processShortFlag(prefix string, argv []string) ([]Value, int, error) {
+	text := strings.TrimPrefix(argv[0], prefix)
+	i := 0
+	names, value := splitByEq(text)
+	lastName := string(names[len(names)-1])
+	flags := make([]Value, 0, len(names))
+
+	for _, name := range names[:len(names)-1] {
+		flags = append(flags, NewFlag(string(name)))
+	}
+
+	if len(value) == 0 {
+		n := app.GetFlagN(lastName)
+		if err := checkFlagValue(lastName, n, argv[i+1:]); err != nil {
+			return nil, 0, err
+		}
+		flags = append(flags, NewFlag(lastName, argv[i+1:i+1+n]...))
+		i += n
+	} else {
+		values := strings.Split(value, ",")
+		flags = append(flags, NewFlag(lastName, values...))
+	}
+	return flags, i, nil
+}
+
 // Normalize parses argv
 func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
 	normalized := make([]Value, 0)
@@ -49,39 +101,20 @@ func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
 		v := argv[i]
 		switch {
 		case strings.HasPrefix(v, "--"):
-			v = strings.TrimPrefix(v, "--")
-			splited := strings.SplitN(v, "=", 2)[0:2]
-			name := splited[0]
-			if len(splited[1]) == 0 {
-				n := app.GetFlagN(name)
-				if err := checkFlagValue(name, n, argv[i+1:]); err != nil {
-					return nil, err
-				}
-				normalized = append(normalized, NewFlag(name, argv[i+1:i+1+n]...))
-				i += n
-			} else {
-				values := strings.Split(splited[1], ",")
-				normalized = append(normalized, NewFlag(name, values...))
+			flag, n, err := app.processLongFlag("--", argv[i:])
+			if err != nil {
+				return nil, err
 			}
+			i += n
+			normalized = append(normalized, flag)
+
 		case strings.HasPrefix(v, "-"):
-			v = strings.TrimPrefix(v, "-")
-			splited := strings.SplitN(v, "=", 2)[0:2]
-			names := splited[0]
-			lastName := string(names[len(names)-1])
-			for _, name := range names[:len(names)-1] {
-				normalized = append(normalized, NewFlag(string(name)))
+			flags, n, err := app.processShortFlag("-", argv[i:])
+			if err != nil {
+				return nil, err
 			}
-			if len(splited[1]) == 0 {
-				n := app.GetFlagN(lastName)
-				if err := checkFlagValue(lastName, n, argv[i+1:]); err != nil {
-					return nil, err
-				}
-				normalized = append(normalized, NewFlag(lastName, argv[i+1:i+1+n]...))
-				i += n
-			} else {
-				values := strings.Split(splited[1], ",")
-				normalized = append(normalized, NewFlag(lastName, values...))
-			}
+			i += n
+			normalized = append(normalized, flags...)
 		default:
 			normalized = append(normalized, NewArg(v))
 		}
