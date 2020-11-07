@@ -10,15 +10,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var exampleExpectedStrings = []string{
-	"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
-	"abc", "--values1=v", "--values2=v1,v2", "arg",
-}
+var (
+	exampleExpectedStrings = []string{
+		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
+		"abc", "--values1=v", "--values2=v1,v2", "arg",
+	}
 
-var exampleInput = []string{
-	"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
-	"abc", "--values1=v", "--values2", "v1", "v2", "arg",
-}
+	exampleExpectedArgv = NormalizedArgv{
+		NewFlag("a"),
+		NewFlag("b"),
+		NewFlag("c"),
+		NewFlag("d", "c"),
+		NewFlag("cd", "c"),
+		NewFlag("e"),
+		NewFlag("f", "x", "x"),
+		NewArg("abc"),
+		NewFlag("values1", "v"),
+		NewFlag("values2", "v1", "v2"),
+		NewArg("arg"),
+	}
+
+	exampleInput = []string{
+		"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
+		"abc", "--values1=v", "--values2", "v1", "v2", "arg",
+	}
+)
 
 func normalizeExampleToStrings() []string {
 	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
@@ -53,6 +69,13 @@ func BenchmarkNormalizeExample(b *testing.B) {
 
 func BenchmarkNormalizeExampleToStrings(b *testing.B) {
 	normalizeExampleToStrings()
+}
+
+func TestNormalize(t *testing.T) {
+	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	got, err := app.Normalize(exampleInput)
+	require.NoError(t, err)
+	assert.Equal(t, got, exampleExpectedArgv)
 }
 
 func TestNormalizeToStrings(t *testing.T) {

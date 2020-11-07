@@ -31,6 +31,9 @@ type Flag struct {
 
 // NewFlag returns flag instance
 func NewFlag(name string, values ...string) *Flag {
+	if values == nil {
+		values = []string{}
+	}
 	return &Flag{name, values}
 }
 
