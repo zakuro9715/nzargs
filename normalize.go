@@ -16,14 +16,14 @@ func New() *App {
 	return &App{map[string]int{}}
 }
 
-// FlagN sets count of flag value
-func (app *App) FlagN(name string, n int) *App {
+// FlagMaxN sets count of flag value
+func (app *App) FlagMaxN(name string, n int) *App {
 	app.FlagsValueN[name] = n
 	return app
 }
 
-// GetFlagN returns count of flag value
-func (app *App) GetFlagN(name string) int {
+// GetFlagMaxN returns count of flag value
+func (app *App) GetFlagMaxN(name string) int {
 	n, ok := app.FlagsValueN[name]
 	if ok {
 		return n
@@ -31,15 +31,11 @@ func (app *App) GetFlagN(name string) int {
 	return 0
 }
 
-func checkFlagValue(name string, n int, args []string) error {
+func readFlagValues(max int, args []string) ([]string, int) {
 	i := 0
-	for ; i < len(args) && !strings.HasPrefix(args[i], "-"); i++ {
+	for ; i < len(args) && i < max && !strings.HasPrefix(args[i], "-"); i++ {
 	}
-	if i < n {
-		format := "Flag %v values is too few. %v values required but has %v args."
-		return fmt.Errorf(format, name, n, i)
-	}
-	return nil
+	return args[:i], i
 }
 
 func splitByEq(s string) (string, string) {
@@ -56,11 +52,9 @@ func (app *App) processLongFlag(prefix string, args []string) (Value, int, error
 	name, value := splitByEq(text)
 	var flag *Flag
 	if len(value) == 0 {
-		n := app.GetFlagN(name)
-		if err := checkFlagValue(name, n, args[1:]); err != nil {
-			return nil, 0, err
-		}
-		flag = NewFlag(name, args[1:n+1]...)
+		max := app.GetFlagMaxN(name)
+		values, n := readFlagValues(max, args[1:])
+		flag = NewFlag(name, values...)
 		i += n
 	} else {
 		values := strings.Split(value, ",")
@@ -69,8 +63,8 @@ func (app *App) processLongFlag(prefix string, args []string) (Value, int, error
 	return flag, i, nil
 }
 
-func (app *App) processShortFlag(prefix string, argv []string) ([]Value, int, error) {
-	text := strings.TrimPrefix(argv[0], prefix)
+func (app *App) processShortFlag(prefix string, args []string) ([]Value, int, error) {
+	text := strings.TrimPrefix(args[0], prefix)
 	i := 0
 	names, value := splitByEq(text)
 	lastName := string(names[len(names)-1])
@@ -81,11 +75,9 @@ func (app *App) processShortFlag(prefix string, argv []string) ([]Value, int, er
 	}
 
 	if len(value) == 0 {
-		n := app.GetFlagN(lastName)
-		if err := checkFlagValue(lastName, n, argv[i+1:]); err != nil {
-			return nil, 0, err
-		}
-		flags = append(flags, NewFlag(lastName, argv[i+1:i+1+n]...))
+		max := app.GetFlagMaxN(lastName)
+		values, n := readFlagValues(max, args[1:])
+		flags = append(flags, NewFlag(lastName, values...))
 		i += n
 	} else {
 		values := strings.Split(value, ",")

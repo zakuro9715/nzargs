@@ -46,7 +46,7 @@ var (
 )
 
 func normalizeExampleToStrings() []string {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	ss, err := app.NormalizeToStrings(exampleInput)
 	if err != nil {
 		panic(err)
@@ -55,7 +55,7 @@ func normalizeExampleToStrings() []string {
 }
 
 func normalizeExample() NormalizedArgv {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	v, err := app.Normalize(exampleInput)
 	if err != nil {
 		panic(err)
@@ -83,25 +83,17 @@ func BenchmarkNormalizeExampleToStrings(b *testing.B) {
 }
 
 func TestNormalize(t *testing.T) {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	got, err := app.Normalize(exampleInput)
 	require.NoError(t, err)
 	assert.Equal(t, got, exampleExpectedArgv)
 }
 
 func TestNormalizeToStrings(t *testing.T) {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	got, err := app.NormalizeToStrings(exampleInput)
 	require.NoError(t, err)
 	assert.Equal(t, got, exampleExpectedStrings)
-}
-
-func TestTooFewValues(t *testing.T) {
-	app := New().FlagN("value", 2).FlagN("v", 2)
-	_, err := app.NormalizeToStrings([]string{"--value", "0"})
-	assert.Error(t, err)
-	_, err = app.NormalizeToStrings([]string{"-v", "0"})
-	assert.Error(t, err)
 }
 
 func TestNormalizeArgs(t *testing.T) {
@@ -113,7 +105,7 @@ func TestNormalizeArgs(t *testing.T) {
 }
 
 func TestNormalizeArgsToStrings(t *testing.T) {
-	app := New().FlagN("values1", 2).FlagN("values2", 2).FlagN("f", 2)
+	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	os.Args = append([]string{"a.out"}, exampleInput...)
 	got, err := app.NormalizeArgsToStrings()
 	require.NoError(t, err)
