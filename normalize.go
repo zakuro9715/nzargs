@@ -1,7 +1,6 @@
 package nzargv
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
