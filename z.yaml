@@ -4,14 +4,14 @@ tasks:
       - go get github.com/eaburns/Watch
   watch:
     run:
-      - Watch -t z test bench
+      - Watch -t z test
   run:
     run:
       - go run ./cmd/nzargv
   test:
     run:
-      - go test -v -race .
+      - go test -race ./...
     tasks:
       bench:
         run:
-          - go test -v -bench .
+          - go test -bench ./...
