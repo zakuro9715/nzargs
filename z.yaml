@@ -5,6 +5,9 @@ tasks:
   watch:
     run:
       - Watch -t z test bench
+  run:
+    run:
+      - go run ./cmd/nzargv
   test:
     run:
       - go test -v -race .
