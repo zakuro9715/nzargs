@@ -69,4 +69,10 @@ app.NormalizeToStrings([]string{
 
 See also ![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzargv)](https://pkg.go.dev/github.com/zakuro9715/nzargv) and [test](normalize_test.go)
 
+# CLI Tool
 
+## Install
+
+```
+go get github.com/zakuro9715/nzargv/cmd/nzargv
+```
