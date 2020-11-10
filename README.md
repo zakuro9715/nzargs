@@ -27,6 +27,21 @@ To
 go get github.com/zakuro9715/nzargv
 ```
 
+# Motivation
+
+There are useful and powerful cli libraries for Go.
+
+But I want preprocess argv before run cli library and raw cli args are complex format.
+Therefore I created nzargv to preprocess raw argv.
+
+# Concept
+
+- Simple
+  - No validation. No typecheck
+- Respect raw argv. So don't swap order as possible as.
+- Result of NormalizeToStrings() is valid argv. So it comopatible with other cli Library (like [urfave/cli](https://github.com/urfave/cli]).
+   - You jest pass result of NormalizeToStrings() as Argv
+
 # Feature
 
 - Split short flags (-ab into -a -b)
@@ -52,5 +67,6 @@ app.NormalizeToStrings([]string{
 }
 ```
 
-See also [godoc](http://godoc.org/github.com/zakuro9715/nzargv) and [test](normalize_test.go)
+See also ![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzargv)](https://pkg.go.dev/github.com/zakuro9715/nzargv) and [test](normalize_test.go)
+
 
