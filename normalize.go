@@ -63,7 +63,7 @@ func parseValue(value string) []string {
 	return strings.Split(value, ",")
 }
 
-func (app *App) processLongFlag(prefix string, args []string) (Value, int, error) {
+func (app *App) processLongFlag(prefix string, args []string) (Value, int) {
 	i := 0
 	text := strings.TrimPrefix(args[i], prefix)
 	name, value := splitByEq(text)
@@ -75,10 +75,10 @@ func (app *App) processLongFlag(prefix string, args []string) (Value, int, error
 		}
 	}
 	flag = NewFlag(name, parseValue(value)...)
-	return flag, i, nil
+	return flag, i
 }
 
-func (app *App) processShortFlag(prefix string, args []string) ([]Value, int, error) {
+func (app *App) processShortFlag(prefix string, args []string) ([]Value, int) {
 	text := strings.TrimPrefix(args[0], prefix)
 	i := 0
 	names, value := splitByEq(text)
@@ -96,11 +96,11 @@ func (app *App) processShortFlag(prefix string, args []string) ([]Value, int, er
 		}
 	}
 	flags = append(flags, NewFlag(lastName, parseValue(value)...))
-	return flags, i, nil
+	return flags, i
 }
 
 // Normalize parses argv
-func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
+func (app *App) Normalize(argv []string) NormalizedArgv {
 	normalized := make([]Value, 0)
 	forceArgMode := false
 	for i := 0; i < len(argv); i++ {
@@ -113,42 +113,33 @@ func (app *App) Normalize(argv []string) (NormalizedArgv, error) {
 		case len(strings.Trim(v, "-")) == 0: // hyphen only
 			normalized = append(normalized, NewArg(v))
 		case strings.HasPrefix(v, "--"):
-			flag, n, err := app.processLongFlag("--", argv[i:])
-			if err != nil {
-				return nil, err
-			}
+			flag, n := app.processLongFlag("--", argv[i:])
 			i += n
 			normalized = append(normalized, flag)
 
 		case strings.HasPrefix(v, "-"):
-			flags, n, err := app.processShortFlag("-", argv[i:])
-			if err != nil {
-				return nil, err
-			}
+			flags, n := app.processShortFlag("-", argv[i:])
 			i += n
 			normalized = append(normalized, flags...)
 		default:
 			normalized = append(normalized, NewArg(v))
 		}
 	}
-	return normalized, nil
+	return normalized
 }
 
 // NormalizeToStrings normalize argv and returns result as text slice
-func (app *App) NormalizeToStrings(argv []string) ([]string, error) {
-	normalized, err := app.Normalize(argv)
-	if err != nil {
-		return nil, err
-	}
-	return normalized.Strings(), nil
+func (app *App) NormalizeToStrings(argv []string) []string {
+	normalized := app.Normalize(argv)
+	return normalized.Strings()
 }
 
 // NormalizeArgs is same Normalize except use os.Args
-func (app *App) NormalizeArgs() ([]Value, error) {
+func (app *App) NormalizeArgs() []Value {
 	return app.Normalize(os.Args[1:])
 }
 
 // NormalizeArgsToStrings is same NormalizeToStrings except use os.Args
-func (app *App) NormalizeArgsToStrings() ([]string, error) {
+func (app *App) NormalizeArgsToStrings() []string {
 	return app.NormalizeToStrings(os.Args[1:])
 }

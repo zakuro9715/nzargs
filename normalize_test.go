@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -49,19 +48,11 @@ var (
 var exampleApp = New().Flag("f", HasValue).Flag("value", HasValue)
 
 func normalizeExampleToStrings() []string {
-	ss, err := exampleApp.NormalizeToStrings(exampleInput)
-	if err != nil {
-		panic(err)
-	}
-	return ss
+	return exampleApp.NormalizeToStrings(exampleInput)
 }
 
 func normalizeExample() NormalizedArgv {
-	v, err := exampleApp.Normalize(exampleInput)
-	if err != nil {
-		panic(err)
-	}
-	return v
+	return exampleApp.Normalize(exampleInput)
 }
 
 func ExampleApp_NormalizeToStrings() {
@@ -84,28 +75,22 @@ func BenchmarkNormalizeExampleToStrings(b *testing.B) {
 }
 
 func TestNormalize(t *testing.T) {
-	got, err := exampleApp.Normalize(exampleInput)
-	require.NoError(t, err)
-	assert.Equal(t, exampleExpectedArgv, got)
+	assert.Equal(t, exampleExpectedArgv, exampleApp.Normalize(exampleInput))
 }
 
 func TestNormalizeToStrings(t *testing.T) {
-	got, err := exampleApp.NormalizeToStrings(exampleInput)
-	require.NoError(t, err)
-	assert.Equal(t, exampleExpectedStrings, got)
+	assert.Equal(t, exampleExpectedStrings, exampleApp.NormalizeToStrings(exampleInput))
 }
 
 func TestNormalizeArgs(t *testing.T) {
 	os.Args = []string{"a", "b", "-c=0"}
 	want := []Value{&Arg{"b"}, &Flag{"c", []string{"0"}}}
-	got, err := New().NormalizeArgs()
-	require.NoError(t, err)
+	got := New().NormalizeArgs()
 	assert.Equal(t, want, got)
 }
 
 func TestNormalizeArgsToStrings(t *testing.T) {
 	os.Args = append([]string{"a.out"}, exampleInput...)
-	got, err := exampleApp.NormalizeArgsToStrings()
-	require.NoError(t, err)
+	got := exampleApp.NormalizeArgsToStrings()
 	assert.Equal(t, exampleExpectedStrings, got)
 }
