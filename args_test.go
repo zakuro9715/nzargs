@@ -16,14 +16,14 @@ func TestFlagsAndArgs(t *testing.T) {
 		NewFlag("cd", "c"),
 		NewFlag("e"),
 		NewFlag("f", "x"),
-		NewFlag("help"),
 		NewFlag("value", "v1"),
 		NewFlag("value", "v2"),
+		NewFlag("value"),
+		NewFlag("help"),
 		NewFlag("-v"),
 	}
 	args := []*Arg{
 		NewArg("abc"),
-		NewArg("arg"),
 		NewArg("-"),
 		NewArg("-----"),
 		NewArg("-v=v"),
