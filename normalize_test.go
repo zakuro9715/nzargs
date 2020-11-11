@@ -12,8 +12,8 @@ import (
 
 var (
 	exampleExpectedStrings = []string{
-		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x,x",
-		"abc", "--values1=v", "--values2=v1,v2", "arg",
+		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x", "--help",
+		"abc", "--value=v1", "--value=v2", "arg",
 		"-", "-----", "---v",
 		"-v=v", "--value=v",
 	}
@@ -25,10 +25,11 @@ var (
 		NewFlag("d", "c"),
 		NewFlag("cd", "c"),
 		NewFlag("e"),
-		NewFlag("f", "x", "x"),
+		NewFlag("f", "x"),
+		NewFlag("help"),
 		NewArg("abc"),
-		NewFlag("values1", "v"),
-		NewFlag("values2", "v1", "v2"),
+		NewFlag("value", "v1"),
+		NewFlag("value", "v2"),
 		NewArg("arg"),
 		NewArg("-"),
 		NewArg("-----"),
@@ -38,16 +39,17 @@ var (
 	}
 
 	exampleInput = []string{
-		"-ab", "-cd=c", "--cd=c", "-ef", "x", "x",
-		"abc", "--values1=v", "--values2", "v1", "v2", "arg",
+		"-ab", "-cd=c", "--cd=c", "-ef", "x", "--help",
+		"abc", "--value=v1", "--value", "v2", "arg",
 		"-", "-----", "---v",
 		"--", "-v=v", "--value=v",
 	}
 )
 
+var exampleApp = New().Flag("f", HasValue).Flag("value", HasValue)
+
 func normalizeExampleToStrings() []string {
-	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
-	ss, err := app.NormalizeToStrings(exampleInput)
+	ss, err := exampleApp.NormalizeToStrings(exampleInput)
 	if err != nil {
 		panic(err)
 	}
@@ -55,8 +57,7 @@ func normalizeExampleToStrings() []string {
 }
 
 func normalizeExample() NormalizedArgv {
-	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
-	v, err := app.Normalize(exampleInput)
+	v, err := exampleApp.Normalize(exampleInput)
 	if err != nil {
 		panic(err)
 	}
@@ -65,12 +66,12 @@ func normalizeExample() NormalizedArgv {
 
 func ExampleApp_NormalizeToStrings() {
 	parsed := normalizeExampleToStrings()
-	fmt.Println(strings.Join(parsed[:7], " "))
-	fmt.Println(strings.Join(parsed[7:11], " "))
-	fmt.Println(strings.Join(parsed[11:], " "))
+	fmt.Println(strings.Join(parsed[:8], " "))
+	fmt.Println(strings.Join(parsed[8:12], " "))
+	fmt.Println(strings.Join(parsed[12:], " "))
 	// Output:
-	// -a -b -c -d=c --cd=c -e -f=x,x
-	// abc --values1=v --values2=v1,v2 arg
+	// -a -b -c -d=c --cd=c -e -f=x --help
+	// abc --value=v1 --value=v2 arg
 	// - ----- ---v -v=v --value=v
 }
 
@@ -83,17 +84,15 @@ func BenchmarkNormalizeExampleToStrings(b *testing.B) {
 }
 
 func TestNormalize(t *testing.T) {
-	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
-	got, err := app.Normalize(exampleInput)
+	got, err := exampleApp.Normalize(exampleInput)
 	require.NoError(t, err)
-	assert.Equal(t, got, exampleExpectedArgv)
+	assert.Equal(t, exampleExpectedArgv, got)
 }
 
 func TestNormalizeToStrings(t *testing.T) {
-	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
-	got, err := app.NormalizeToStrings(exampleInput)
+	got, err := exampleApp.NormalizeToStrings(exampleInput)
 	require.NoError(t, err)
-	assert.Equal(t, got, exampleExpectedStrings)
+	assert.Equal(t, exampleExpectedStrings, got)
 }
 
 func TestNormalizeArgs(t *testing.T) {
@@ -105,9 +104,8 @@ func TestNormalizeArgs(t *testing.T) {
 }
 
 func TestNormalizeArgsToStrings(t *testing.T) {
-	app := New().FlagMaxN("values1", 2).FlagMaxN("values2", 2).FlagMaxN("f", 2)
 	os.Args = append([]string{"a.out"}, exampleInput...)
-	got, err := app.NormalizeArgsToStrings()
+	got, err := exampleApp.NormalizeArgsToStrings()
 	require.NoError(t, err)
-	assert.Equal(t, got, exampleExpectedStrings)
+	assert.Equal(t, exampleExpectedStrings, got)
 }

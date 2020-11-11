@@ -5,36 +5,47 @@ import (
 	"strings"
 )
 
+type FlagOption int
+
+const (
+	HasValue FlagOption = iota
+)
+
 // App holds config for normalize
 type App struct {
-	FlagsValueN map[string]int
+	flagsHasValue map[string]bool
 }
 
 // New returns new App instance
 func New() *App {
-	return &App{map[string]int{}}
+	return &App{map[string]bool{}}
 }
 
-// FlagMaxN sets count of flag value
-func (app *App) FlagMaxN(name string, n int) *App {
-	app.FlagsValueN[name] = n
+// Flag sets flag option
+func (app *App) Flag(name string, opt FlagOption) *App {
+	switch opt {
+	case HasValue:
+		app.flagsHasValue[name] = true
+	default:
+		panic("Unknown flag option")
+	}
 	return app
 }
 
-// GetFlagMaxN returns count of flag value
-func (app *App) GetFlagMaxN(name string) int {
-	n, ok := app.FlagsValueN[name]
+// FlagHasValue returns true if flag has value
+func (app *App) FlagHasValue(name string) bool {
+	v, ok := app.flagsHasValue[name]
 	if ok {
-		return n
+		return v
 	}
-	return 0
+	return false
 }
 
-func readFlagValues(max int, args []string) ([]string, int) {
-	i := 0
-	for ; i < len(args) && i < max && !strings.HasPrefix(args[i], "-"); i++ {
+func getFlagValue(i int, args []string) string {
+	if i < len(args) && !strings.HasPrefix(args[i], "-") {
+		return args[i]
 	}
-	return args[:i], i
+	return ""
 }
 
 func splitByEq(s string) (string, string) {
@@ -45,20 +56,25 @@ func splitByEq(s string) (string, string) {
 	return splited[0], splited[1]
 }
 
+func parseValue(value string) []string {
+	if len(value) == 0 {
+		return []string{}
+	}
+	return strings.Split(value, ",")
+}
+
 func (app *App) processLongFlag(prefix string, args []string) (Value, int, error) {
 	i := 0
 	text := strings.TrimPrefix(args[i], prefix)
 	name, value := splitByEq(text)
 	var flag *Flag
-	if len(value) == 0 {
-		max := app.GetFlagMaxN(name)
-		values, n := readFlagValues(max, args[1:])
-		flag = NewFlag(name, values...)
-		i += n
-	} else {
-		values := strings.Split(value, ",")
-		flag = NewFlag(name, values...)
+	if len(value) == 0 && app.FlagHasValue(name) {
+		if fv := getFlagValue(i+1, args); len(fv) > 0 {
+			value = fv
+			i++
+		}
 	}
+	flag = NewFlag(name, parseValue(value)...)
 	return flag, i, nil
 }
 
@@ -73,15 +89,13 @@ func (app *App) processShortFlag(prefix string, args []string) ([]Value, int, er
 		flags = append(flags, NewFlag(string(name)))
 	}
 
-	if len(value) == 0 {
-		max := app.GetFlagMaxN(lastName)
-		values, n := readFlagValues(max, args[1:])
-		flags = append(flags, NewFlag(lastName, values...))
-		i += n
-	} else {
-		values := strings.Split(value, ",")
-		flags = append(flags, NewFlag(lastName, values...))
+	if len(value) == 0 && app.FlagHasValue(lastName) {
+		if fv := getFlagValue(i+1, args); len(fv) > 0 {
+			value = fv
+			i++
+		}
 	}
+	flags = append(flags, NewFlag(lastName, parseValue(value)...))
 	return flags, i, nil
 }
 

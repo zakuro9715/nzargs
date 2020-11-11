@@ -60,10 +60,11 @@ func (v *Flag) Text() string {
 	} else {
 		name = "--" + v.Name
 	}
-	if len(v.Values) == 0 {
+	value := strings.Join(v.Values, ",")
+	if len(value) == 0 {
 		return name
 	}
-	return fmt.Sprintf("%v=%v", name, strings.Join(v.Values, ","))
+	return fmt.Sprintf("%v=%v", name, value)
 }
 
 // Arg represets cli argument

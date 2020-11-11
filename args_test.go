@@ -15,9 +15,10 @@ func TestFlagsAndArgs(t *testing.T) {
 		NewFlag("d", "c"),
 		NewFlag("cd", "c"),
 		NewFlag("e"),
-		NewFlag("f", "x", "x"),
-		NewFlag("values1", "v"),
-		NewFlag("values2", "v1", "v2"),
+		NewFlag("f", "x"),
+		NewFlag("help"),
+		NewFlag("value", "v1"),
+		NewFlag("value", "v2"),
 		NewFlag("-v"),
 	}
 	args := []*Arg{
