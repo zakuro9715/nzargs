@@ -10,7 +10,7 @@ tasks:
       - go run ./cmd/nzargv
   test:
     run:
-      - go test -race ./...
+      - go test -race -cover ./...
     tasks:
       bench:
         run:
