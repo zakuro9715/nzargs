@@ -1,11 +1,11 @@
-# nzargv
+# nzflag
 
 
-![Test](https://github.com/zakuro9715/nzargv/workflows/Test/badge.svg)
-[![codecov](https://codecov.io/gh/zakuro9715/nzargv/branch/main/graph/badge.svg?token=K937ZYFF9Z)](https://codecov.io/gh/zakuro9715/nzargv)
-[![GoDoc](https://godoc.org/github.com/zakuro9715/nzargv?status.svg)](http://godoc.org/github.com/zakuro9715/nzargv)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzargv)](https://pkg.go.dev/github.com/zakuro9715/nzargv)
-[![Go Report Card](https://goreportcard.com/badge/github.com/zakuro9715/nzargv)](https://goreportcard.com/report/github.com/zakuro9715/nzargv)
+![Test](https://github.com/zakuro9715/nzflag/workflows/Test/badge.svg)
+[![codecov](https://codecov.io/gh/zakuro9715/nzflag/branch/main/graph/badge.svg?token=K937ZYFF9Z)](https://codecov.io/gh/zakuro9715/nzflag)
+[![GoDoc](https://godoc.org/github.com/zakuro9715/nzflag?status.svg)](http://godoc.org/github.com/zakuro9715/nzflag)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzflag)](https://pkg.go.dev/github.com/zakuro9715/nzflag)
+[![Go Report Card](https://goreportcard.com/badge/github.com/zakuro9715/nzflag)](https://goreportcard.com/report/github.com/zakuro9715/nzflag)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Go library to Normalize argv
@@ -24,7 +24,7 @@ To
 # Install
 
 ```
-go get github.com/zakuro9715/nzargv
+go get github.com/zakuro9715/nzflag
 ```
 
 # Motivation
@@ -32,7 +32,7 @@ go get github.com/zakuro9715/nzargv
 There are useful and powerful cli libraries for Go.
 
 But I want preprocess argv before run cli library and raw cli args are complex format.
-Therefore I created nzargv to preprocess raw argv.
+Therefore I created nzflag to preprocess raw argv.
 
 # Concept
 
@@ -67,12 +67,12 @@ app.NormalizeToStrings([]string{
 }
 ```
 
-See also ![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzargv)](https://pkg.go.dev/github.com/zakuro9715/nzargv) and [test](normalize_test.go)
+See also ![PkgGoDev](https://pkg.go.dev/badge/github.com/zakuro9715/nzflag)](https://pkg.go.dev/github.com/zakuro9715/nzflag) and [test](normalize_test.go)
 
 # CLI Tool
 
 ## Install
 
 ```
-go get github.com/zakuro9715/nzargv/cmd/nzargv
+go get github.com/zakuro9715/nzflag/cmd/nzflag
 ```

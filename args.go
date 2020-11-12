@@ -1,4 +1,4 @@
-package nzargv
+package nzflag
 
 type NormalizedArgv []Value
 
