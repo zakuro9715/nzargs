@@ -11,7 +11,7 @@ import (
 
 var (
 	exampleExpectedStrings = []string{
-		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x", "abc",
+		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x", "-g=x=x", "abc",
 		"--value=v1", "--value=v2", "--value", "--help",
 		"-", "-----", "---v",
 		"-v=v", "--value=v",
@@ -25,6 +25,7 @@ var (
 		NewFlag("cd", "c"),
 		NewFlag("e"),
 		NewFlag("f", "x"),
+		NewFlag("g", "x=x"),
 		NewArg("abc"),
 		NewFlag("value", "v1"),
 		NewFlag("value", "v2"),
@@ -38,7 +39,7 @@ var (
 	}
 
 	exampleInput = []string{
-		"-ab", "-cd=c", "--cd=c", "-ef", "x", "abc",
+		"-ab", "-cd=c", "--cd=c", "-ef", "x", "-gx=x", "abc",
 		"--value=v1", "--value", "v2", "--value", "--help",
 		"-", "-----", "---v",
 		"--", "-v=v", "--value=v",
@@ -49,7 +50,7 @@ func TestFlagPanic(t *testing.T) {
 	assert.Panics(t, func() { New().Flag("f", -1) })
 }
 
-var exampleApp = New().Flag("f", HasValue).Flag("value", HasValue)
+var exampleApp = New().Flag("f", HasValue).Flag("g", HasValue).Flag("value", HasValue)
 
 func normalizeExampleToStrings() []string {
 	return exampleApp.NormalizeToStrings(exampleInput)
@@ -61,11 +62,11 @@ func normalizeExample() NormalizedArgv {
 
 func ExampleApp_NormalizeToStrings() {
 	parsed := normalizeExampleToStrings()
-	fmt.Println(strings.Join(parsed[:8], " "))
-	fmt.Println(strings.Join(parsed[8:12], " "))
-	fmt.Println(strings.Join(parsed[12:], " "))
+	fmt.Println(strings.Join(parsed[:9], " "))
+	fmt.Println(strings.Join(parsed[9:13], " "))
+	fmt.Println(strings.Join(parsed[13:], " "))
 	// Output:
-	// -a -b -c -d=c --cd=c -e -f=x abc
+	// -a -b -c -d=c --cd=c -e -f=x -g=x=x abc
 	// --value=v1 --value=v2 --value --help
 	// - ----- ---v -v=v --value=v
 }

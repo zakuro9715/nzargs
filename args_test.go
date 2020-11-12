@@ -16,6 +16,7 @@ func TestFlagsAndArgs(t *testing.T) {
 		NewFlag("cd", "c"),
 		NewFlag("e"),
 		NewFlag("f", "x"),
+		NewFlag("g", "x=x"),
 		NewFlag("value", "v1"),
 		NewFlag("value", "v2"),
 		NewFlag("value"),

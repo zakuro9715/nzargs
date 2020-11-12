@@ -81,6 +81,13 @@ func (app *App) processLongFlag(prefix string, args []string) (Value, int) {
 func (app *App) processShortFlag(prefix string, args []string) ([]Value, int) {
 	text := strings.TrimPrefix(args[0], prefix)
 	i := 0
+
+	first := string(text[0])
+	// -foo -> -f=oo
+	if len(text) > 1 && app.FlagHasValue(first) {
+		return []Value{NewFlag(first, parseValue(text[1:])...)}, 0
+	}
+
 	names, value := splitByEq(text)
 	lastName := string(names[len(names)-1])
 	flags := make([]Value, 0, len(names))
