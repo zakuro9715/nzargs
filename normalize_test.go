@@ -46,11 +46,27 @@ var (
 	}
 )
 
-func TestFlagPanic(t *testing.T) {
+func TestAppFlagPanic(t *testing.T) {
 	assert.Panics(t, func() { New().Flag("f", -1) })
 }
 
-var exampleApp = New().Flag("f", HasValue).Flag("g", HasValue).Flag("value", HasValue)
+func TestAppFlag(t *testing.T) {
+	app := New()
+	app.Flag("f", HasValue)
+	assert.True(t, app.FlagHasValue("f"))
+	app.Flag("f", None)
+	assert.Equal(t, None, app.FlagOption["f"])
+	app.Flag("fa", None)
+	assert.Equal(t, None, app.FlagOption["f"])
+}
+
+var exampleApp = &App{
+	FlagOption: map[string]FlagOption{
+		"f":     HasValue,
+		"g":     HasValue,
+		"value": HasValue,
+	},
+}
 
 func normalizeExampleToStrings() []string {
 	return exampleApp.NormalizeToStrings(exampleInput)

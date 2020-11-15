@@ -8,37 +8,35 @@ import (
 type FlagOption int
 
 const (
-	HasValue FlagOption = iota
+	None     FlagOption = 0
+	HasValue FlagOption = 1 << iota
 )
 
 // App holds config for normalize
 type App struct {
-	flagsHasValue map[string]bool
+	FlagOption map[string]FlagOption
 }
 
 // New returns new App instance
 func New() *App {
-	return &App{map[string]bool{}}
+	return &App{map[string]FlagOption{}}
 }
 
 // Flag sets flag option
-func (app *App) Flag(name string, opt FlagOption) *App {
+func (app *App) Flag(name string, opt FlagOption) {
 	switch opt {
+	case None:
+		app.FlagOption[name] = 0
 	case HasValue:
-		app.flagsHasValue[name] = true
+		app.FlagOption[name] = app.FlagOption[name] | opt
 	default:
 		panic("Unknown flag option")
 	}
-	return app
 }
 
 // FlagHasValue returns true if flag has value
 func (app *App) FlagHasValue(name string) bool {
-	v, ok := app.flagsHasValue[name]
-	if ok {
-		return v
-	}
-	return false
+	return app.FlagOption[name]&HasValue == HasValue
 }
 
 func getFlagValue(i int, args []string) string {
