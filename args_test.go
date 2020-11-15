@@ -27,6 +27,7 @@ func TestFlagsAndArgs(t *testing.T) {
 		NewArg("abc"),
 		NewArg("-"),
 		NewArg("-----"),
+		NewArg("--"),
 		NewArg("-v=v"),
 		NewArg("--value=v"),
 	}

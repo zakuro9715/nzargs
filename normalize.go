@@ -113,6 +113,7 @@ func (app *App) Normalize(argv []string) NormalizedArgv {
 		switch {
 		case v == "--":
 			forceArgMode = true
+			normalized = append(normalized, NewArg(v))
 		case forceArgMode:
 			normalized = append(normalized, NewArg(v))
 		case len(strings.Trim(v, "-")) == 0: // hyphen only

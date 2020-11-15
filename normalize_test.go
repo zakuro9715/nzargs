@@ -13,7 +13,7 @@ var (
 	exampleExpectedStrings = []string{
 		"-a", "-b", "-c", "-d=c", "--cd=c", "-e", "-f=x", "-g=x=x", "abc",
 		"--value=v1", "--value=v2", "--value", "--help",
-		"-", "-----", "---v",
+		"-", "-----", "---v", "--",
 		"-v=v", "--value=v",
 	}
 
@@ -34,12 +34,13 @@ var (
 		NewArg("-"),
 		NewArg("-----"),
 		NewFlag("-v"),
+		NewArg("--"),
 		NewArg("-v=v"),
 		NewArg("--value=v"),
 	}
 
 	exampleInput = []string{
-		"-ab", "-cd=c", "--cd=c", "-ef", "x", "-gx=x", "abc",
+		"-ab", "-cd=c", "--cd=c", "-e", "-f", "x", "-gx=x", "abc",
 		"--value=v1", "--value", "v2", "--value", "--help",
 		"-", "-----", "---v",
 		"--", "-v=v", "--value=v",
@@ -84,7 +85,7 @@ func ExampleApp_NormalizeToStrings() {
 	// Output:
 	// -a -b -c -d=c --cd=c -e -f=x -g=x=x abc
 	// --value=v1 --value=v2 --value --help
-	// - ----- ---v -v=v --value=v
+	// - ----- ---v -- -v=v --value=v
 }
 
 func BenchmarkNormalizeExample(b *testing.B) {
