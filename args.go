@@ -59,7 +59,7 @@ func (argv NormalizedArgv) Args() []*Arg {
 func (argv NormalizedArgv) Strings() []string {
 	ss := make([]string, len(argv))
 	for i, v := range argv {
-		ss[i] = v.Text()
+		ss[i] = v.String()
 	}
 	return ss
 }

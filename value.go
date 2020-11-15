@@ -17,8 +17,8 @@ const (
 
 // Value represents Arg or Flag
 type Value interface {
+	fmt.Stringer
 	Type() ValueType
-	Text() string
 	Flag() *Flag
 	Arg() *Arg
 }
@@ -52,8 +52,8 @@ func (v *Flag) Type() ValueType {
 	return TypeFlag
 }
 
-// Text returns flag as text
-func (v *Flag) Text() string {
+// String returns flag string
+func (v *Flag) String() string {
 	name := v.Name
 	if len(name) == 1 {
 		name = "-" + v.Name
@@ -92,7 +92,7 @@ func (v *Arg) Type() ValueType {
 	return TypeArg
 }
 
-// Text returns arg as text
-func (v *Arg) Text() string {
+// String returns arg string
+func (v *Arg) String() string {
 	return v.Value
 }
