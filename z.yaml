@@ -4,7 +4,7 @@ tasks:
       - go get github.com/eaburns/Watch
   watch:
     run:
-      - Watch -t z test
+      - gow test
   run:
     run:
       - go run ./cmd/nzargv
